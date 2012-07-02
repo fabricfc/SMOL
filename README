@@ -1,0 +1,14 @@
+/**
+ * SMOL
+ * Some Matrix Operations Library (creates, multiplicates, transposes, inverse, destroy)
+ * Author: Fabricio F. Carvalho
+ * License: GNU
+ * 
+ * thanks for Jason Yu-Tseh (inversion code)
+ * http://chi3x10.wordpress.com/2008/05/28/calculate-matrix-inversion-in-c/
+ */
+
+SMOL is composed by two files:
+
+smol.h is the library
+main.cpp is the example of usage.
