@@ -30,20 +30,44 @@ public:
      */
     T **matrizMult(T **mat1, int lin1, int col1, T **mat2, int lin2, int col2);
     /**
+     * matrix multiplication 
+     * multiplica a matriz
+     * @param matResult Result of the operation
+     */
+    void matrizMult(T **mat1, int lin1, int col1, T **mat2, int lin2, int col2, T **matResult);
+    /**
      * matrix sum 
      * soma de matriz
      */
     T **matrizSum(T **mat1, int lin1, int col1, T **mat2, int lin2, int col2);
+    /**
+     * matrix sum 
+     * soma de matriz
+     * @param matResult Result of the operation
+     */
+    void matrizSum(T **mat1, int lin1, int col1, T **mat2, int lin2, int col2, T **matResult);
     /**
      * matrix subtraction
      * subtração of matriz
      */
     T **matrizSub(T **mat1, int lin1, int col1, T **mat2, int lin2, int col2);
     /**
+     * matrix subtraction
+     * subtração of matriz
+     * @param matResult Result of the operation
+     */
+    void matrizSub(T **mat1, int lin1, int col1, T **mat2, int lin2, int col2, T **matResult);
+    /**
      * matrix transposing
      * transposta a matriz
      */
     T **matrizTrans(T **mat1, int lin1, int col1);
+    /**
+     * matrix transposing
+     * transposta a matriz
+     * @param matResult Result of the operation
+     */    
+    void matrizTrans(T **mat1, int lin1, int col1, T **matResult);
     /**
      * matrix printing
      * imprime a matriz
@@ -65,14 +89,14 @@ public:
     float calculaDeterminante(T **mat, int order);
 
     // matrix inversioon
-    // the result is put in Y
-    void inversaoMatriz(T **A, int order, T **Y);
+    // the result is put in matResult
+    void inversaoMatriz(T **A, int order, T **matResult);
 };
 
 // calculate the cofactor of element (row,col)
 
 template <class T>
-void SMOL<T>::GetMinor(T **src, T **dest, int row, int col, int order) {
+void SMOL<T>::GetMinor (T **src, T **dest, int row, int col, int order) {
     // indicate which col and row is being copied to dest
     int colCount = 0, rowCount = 0;
 
@@ -94,7 +118,7 @@ void SMOL<T>::GetMinor(T **src, T **dest, int row, int col, int order) {
 // Calculate the determinant recursively.
 
 template <class T>
-float SMOL<T>::calculaDeterminante(T **mat, int order) {
+float SMOL<T>::calculaDeterminante (T **mat, int order) {
     // order must be >= 0
     // stop the recursion when matrix is a single element
     if (order == 1)
@@ -128,10 +152,10 @@ float SMOL<T>::calculaDeterminante(T **mat, int order) {
 
 
 // matrix inversioon
-// the result is put in Y
+// the result is put in matResult
 
 template <class T>
-void SMOL<T>::inversaoMatriz(T **A, int order, T **Y) {
+void SMOL<T>::inversaoMatriz (T **A, int order, T **matResult) {
     // get the determinant of a
     T det = 1.0 / calculaDeterminante(A, order);
 
@@ -145,9 +169,9 @@ void SMOL<T>::inversaoMatriz(T **A, int order, T **Y) {
         for (int i = 0; i < order; i++) {
             // get the co-factor (matrix) of A(j,i)
             GetMinor(A, minor, j, i, order);
-            Y[i][j] = det * calculaDeterminante(minor, order - 1);
+            matResult[i][j] = det * calculaDeterminante(minor, order - 1);
             if ((i + j) % 2 == 1)
-                Y[i][j] = -Y[i][j];
+                matResult[i][j] = -matResult[i][j];
         }
     }
 
@@ -158,11 +182,10 @@ void SMOL<T>::inversaoMatriz(T **A, int order, T **Y) {
 }
 
 template <class T>
-T **SMOL<T>::matrizMult(T **mat1, int lin1, int col1, T **mat2, int lin2, int col2) {
+void SMOL<T>::matrizMult (T **mat1, int lin1, int col1, T **mat2, int lin2, int col2, T **matResult) {
     if (col1 != lin2)
         //multiplicacao incompatível
-        return NULL;
-    T **resultado = criarMatriz(lin1, col2);
+        return;
     int i, j, k;
     T sum;
     for (i = 0; i < lin1; i++)
@@ -170,47 +193,78 @@ T **SMOL<T>::matrizMult(T **mat1, int lin1, int col1, T **mat2, int lin2, int co
             sum = 0;
             for (k = 0; k < col1; k++)
                 sum = sum + mat1[i][k] * mat2[k][j];
-            resultado[i][j] = sum;
+            matResult[i][j] = sum;
         }
+}
+
+template <class T>
+T **SMOL<T>::matrizMult (T **mat1, int lin1, int col1, T **mat2, int lin2, int col2) {
+    if (col1 != lin2)
+        //multiplicacao incompatível
+        return NULL;
+    T **resultado = criarMatriz(lin1, col2);
+    matrizMult(mat1, lin1, col1, mat2, lin2, col2, resultado);
     return resultado;
 }
 
 template <class T>
-T **SMOL<T>::matrizSum(T **mat1, int lin1, int col1, T **mat2, int lin2, int col2) {
+void SMOL<T>::matrizSum (T **mat1, int lin1, int col1, T **mat2, int lin2, int col2, T **matResult) {
+    if (col1 != col2 || lin1 != lin2)
+        //soma incompatível
+        return;
+    int i, j, k;
+    for (i = 0; i < lin1; i++)
+        for (j = 0; j < col1; j++) {
+            matResult[i][j] = mat1[i][j] + mat2[i][j];
+        }
+}
+
+template <class T>
+T **SMOL<T>::matrizSum (T **mat1, int lin1, int col1, T **mat2, int lin2, int col2) {
     if (col1 != col2 || lin1 != lin2)
         //soma incompatível
         return NULL;
     T **resultado = criarMatriz(lin1, col1);
-    int i, j, k;
-    for (i = 0; i < lin1; i++)
-        for (j = 0; j < col1; j++) {
-            resultado[i][j] = mat1[i][j] + mat2[i][j];
-        }
+    matrizSum(mat1, lin1, col1, mat2, lin2, col2, resultado);
     return resultado;
 }
 
 template <class T>
-T **SMOL<T>::matrizSub(T **mat1, int lin1, int col1, T **mat2, int lin2, int col2) {
+void SMOL<T>::matrizSub (T **mat1, int lin1, int col1, T **mat2, int lin2, int col2, T **matResult)
+{
+    if (col1 != col2 || lin1 != lin2)
+        //soma incompatível
+        return;
+    int i, j, k;
+    for (i = 0; i < lin1; i++)
+        for (j = 0; j < col1; j++) {
+            matResult[i][j] = mat1[i][j] - mat2[i][j];
+        }
+}
+
+template <class T>
+T **SMOL<T>::matrizSub (T **mat1, int lin1, int col1, T **mat2, int lin2, int col2) {
     if (col1 != col2 || lin1 != lin2)
         //soma incompatível
         return NULL;
     T **resultado = criarMatriz(lin1, col1);
-    int i, j, k;
-    for (i = 0; i < lin1; i++)
-        for (j = 0; j < col1; j++) {
-            resultado[i][j] = mat1[i][j] - mat2[i][j];
-        }
+    matrizSub(mat1, lin1, col1, mat2, lin2, col2, resultado);
     return resultado;
 }
 
 template <class T>
-T **SMOL<T>::matrizTrans(T **mat1, int lin1, int col1) {
-    T **resultado = criarMatriz(col1, lin1);
+void SMOL<T>::matrizTrans (T **mat1, int lin1, int col1, T **matResult) {
     int i, j;
     for (i = 0; i < lin1; i++)
         for (j = 0; j < col1; j++) {
-            resultado[j][i] = mat1[i][j];
+            matResult[j][i] = mat1[i][j];
         }
+}
+
+template <class T>
+T **SMOL<T>::matrizTrans (T **mat1, int lin1, int col1) {
+    T **resultado = criarMatriz(col1, lin1);
+    matrizTrans(mat1, lin1, col1, resultado);
     return resultado;
 }
 
