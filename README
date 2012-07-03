@@ -1,6 +1,7 @@
 /**
  * SMOL
  * Some Matrix Operations Library (creates, multiplicates, transposes, inverse, destroy)
+ * CPP - C++ - CPlusPlus
  * Author: Fabricio F. Carvalho
  * License: GNU
  * 
